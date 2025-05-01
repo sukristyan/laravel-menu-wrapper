@@ -13,7 +13,7 @@ final class CustomRouteProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('navigation-menu', function () {
+        $this->app->singleton('sukristyan.menu', function () {
             return new RegisterMenu();
         });
     }

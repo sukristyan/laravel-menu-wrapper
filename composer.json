@@ -1,0 +1,43 @@
+{
+    "name": "sukristyan/laravel-menu-wrapper",
+    "description": "A lightweight Laravel package to simplify building dynamic and structured menus in your applications.",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "menu",
+        "dynamic menu",
+        "laravel-menu",
+        "group menu",
+        "wrapper",
+        "laravel wrapper",
+        "laravel menu wrapper",
+        "laravel menu"
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sukristyan\\LaravelMenuWrapper\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "sukristyan",
+            "email": "hi@galih.me"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sukristyan\\LaravelMenuWrapper\\CustomRouteProvider"
+            ]
+        }
+    }
+}

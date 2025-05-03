@@ -1,0 +1,53 @@
+<?php
+
+namespace Sukristyan\LaravelMenuWrapper;
+
+use Illuminate\Routing\Route;
+use Illuminate\Support\ServiceProvider;
+use Sukristyan\LaravelMenuWrapper\Facade\RegisterMenu;
+
+final class CustomRouteProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        $this->registerConfig();
+
+        $this->app->singleton('sukristyan.menu', function () {
+            return new RegisterMenu();
+        });
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Route::macro('groupMenu', function (string $label) {
+            RegisterMenu::groupping($label);
+            return $this;
+        });
+
+        Route::macro('menu', function (string $label) {
+            /** @var \Illuminate\Routing\Route $this */
+            RegisterMenu::add($this, $label);
+            return $this;
+        });
+
+        Route::macro('group', function ($attributes, $routes) {
+            $result = \Illuminate\Support\Facades\Route::buildGroup($attributes, $routes);
+            RegisterMenu::endGroup();
+            return $result;
+        });
+    }
+
+    public function registerConfig()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/laravel-menu-wrapper.php',
+            'laravel-menu-wrapper'
+        );
+    }
+}

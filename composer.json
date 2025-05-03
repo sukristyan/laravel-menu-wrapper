@@ -7,7 +7,11 @@
         "menu",
         "dynamic menu",
         "laravel-menu",
-        "group menu"
+        "group menu",
+        "wrapper",
+        "laravel wrapper",
+        "laravel menu wrapper",
+        "laravel menu"
     ],
     "license": "MIT",
     "autoload": {

@@ -13,6 +13,8 @@ final class CustomRouteProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->registerConfig();
+
         $this->app->singleton('sukristyan.menu', function () {
             return new RegisterMenu();
         });
@@ -29,14 +31,23 @@ final class CustomRouteProvider extends ServiceProvider
         });
 
         Route::macro('menu', function (string $label) {
-            RegisterMenu::add($this->uri(), $label);
+            /** @var \Illuminate\Routing\Route $this */
+            RegisterMenu::add($this, $label);
             return $this;
         });
 
         Route::macro('group', function ($attributes, $routes) {
             $result = \Illuminate\Support\Facades\Route::buildGroup($attributes, $routes);
-            RegisterMenu::endGroupping();
+            RegisterMenu::endGroup();
             return $result;
         });
+    }
+
+    public function registerConfig()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/laravel-menu-wrapper.php',
+            'laravel-menu-wrapper'
+        );
     }
 }

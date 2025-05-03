@@ -11,13 +11,11 @@ return [
      * ----------------------------------------------------------------------
      * Possible value: key, item
      */
-    'group_as' => 'key',
+    'group_as' => 'item',
 
     'populate_items' => function (Route $route) {
         return [
             'route_name' => $route->getName(),
-            'uri' => $route->uri(),
-            'method' => $route->getActionMethod(),
         ];
     }
 ];

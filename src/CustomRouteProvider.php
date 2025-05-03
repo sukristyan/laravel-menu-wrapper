@@ -25,6 +25,8 @@ final class CustomRouteProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->publishConfig();
+
         Route::macro('groupMenu', function (string $label) {
             RegisterMenu::groupping($label);
             return $this;
@@ -49,5 +51,16 @@ final class CustomRouteProvider extends ServiceProvider
             __DIR__ . '/../config/laravel-menu-wrapper.php',
             'laravel-menu-wrapper'
         );
+    }
+
+    public function publishConfig()
+    {
+        if (!$this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->publishes([
+            __DIR__ . '/../config/laravel-menu-wrapper.php' => config_path('laravel-menu-wrapper.php'),
+        ], 'laravel-menu-wrapper');
     }
 }

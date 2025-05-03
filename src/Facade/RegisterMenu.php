@@ -9,40 +9,11 @@ use Sukristyan\LaravelMenuWrapper\Exceptions\InvalidGroupException;
 class RegisterMenu extends Facade
 {
     protected static array $menus = [];
-    protected static string|null $currentGroup = null;
+    protected static array $groups = ['index' => 0, 'group_name' => ''];
 
-    public static function groupping(string $label): void
+    protected static function getFacadeAccessor()
     {
-        static::$currentGroup = $label;
-
-        if (!isset(static::$menus[$label])) {
-            static::$menus[$label] = [
-                'label' => $label,
-                'children' => [],
-            ];
-        }
-    }
-
-    public static function endGroup(): void
-    {
-        static::$currentGroup = null;
-    }
-
-    public static function add(Route $route, string $label): void
-    {
-        if (static::$currentGroup) {
-            static::$menus[static::$currentGroup]['children'][] = [
-                'route_name' => $route->getName(),
-                'uri' => $route->uri(),
-                'label' => $label,
-            ];
-        } else {
-            static::$menus[] = [
-                'route_name' => $route->getName(),
-                'uri' => $route->uri(),
-                'label' => $label,
-            ];
-        }
+        return 'sukristyan.menu';
     }
 
     public static function all(): array
@@ -50,12 +21,72 @@ class RegisterMenu extends Facade
         return static::$menus;
     }
 
-    private static function groupAs()
+    protected static function add(Route $route, string $label, string $groupLabel = '')
     {
-        if (!in_array($given = config('laravel-menu-wrapper.group_as'), $expect = ['item', 'key'])) {
+        if (!empty($groupLabel)) {
+            self::createAsGroup($route, $label, $groupLabel);
+        } else {
+            static::$menus[] = array_merge(
+                ['label' => $label],
+                config('laravel-menu-wrapper.populate_items')($route)
+            );
+        }
+    }
+
+    private static function createAsGroup(Route $route, string $label, string $groupLabel): array
+    {
+        if (
+            !in_array(
+                $given = config('laravel-menu-wrapper.group_as', 'key'),
+                $expect = ['item', 'key'],
+                true
+            )
+        ) {
             throw InvalidGroupException::create($given, $expect);
         }
 
-        return config('laravel-menu-wrapper.group_as');
+        foreach (static::$menus as $id => $menu) {
+            if (is_array($menu) && ($menu['group_name'] ?? null) === $groupLabel) {
+                static::$groups = ['id' => $id, 'group_name' => $groupLabel];
+                return match ($given) {
+                    'key' => self::groupAsKey($route, $label, $groupLabel),
+                    'item' => self::groupAsItem($route, $label, $groupLabel),
+                };
+            }
+        }
+
+        $newId = count(static::$menus);
+        static::$groups = ['id' => $newId, 'group_name' => $groupLabel];
+
+        return match ($given) {
+            'key' => self::groupAsKey($route, $label, $groupLabel),
+            'item' => self::groupAsItem($route, $label, $groupLabel),
+        };
+    }
+
+    private static function groupAsKey(Route $route, string $label, string $groupLabel): array
+    {
+        return static::$menus[$groupLabel][] = array_merge(
+            ['label' => $label],
+            config('laravel-menu-wrapper.populate_items')($route)
+        );
+    }
+
+    private static function groupAsItem(Route $route, string $label, string $groupLabel): array
+    {
+        $id = static::$groups['id'];
+
+        if (!isset(static::$menus[$id]['childs'])) {
+            static::$menus[$id] = [
+                'group_name' => $groupLabel,
+                'childs' => []
+            ];
+        }
+
+        static::$menus[$id]['childs'][] = array_merge(
+            ['label' => $label],
+            config('laravel-menu-wrapper.populate_items')($route)
+        );
+        return static::$menus[$id];
     }
 }

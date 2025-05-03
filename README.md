@@ -82,7 +82,7 @@ Here, you can define what you want to collect from the 'Illuminate\Routing\Route
 Go to your 'routes/web.php', and add the `menu('Menu Label', 'Group Label')` function to your route:
 
 ```php
-Route::get('index', \[DashboardController::class, 'index'])
+Route::get('index', [DashboardController::class, 'index'])
     ->name('index')
     ->menu('Dashboard');
 ```

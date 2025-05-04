@@ -27,7 +27,7 @@ final class CustomRouteProvider extends ServiceProvider
     {
         $this->publishConfig();
 
-        Route::macro('menu', function (string $label, string $groupLabel) {
+        Route::macro('menu', function (string $label, string $groupLabel = '') {
             /** @var \Illuminate\Routing\Route $this */
             RegisterMenu::add($this, $label, $groupLabel);
             return $this;

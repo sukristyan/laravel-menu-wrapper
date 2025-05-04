@@ -27,21 +27,10 @@ final class CustomRouteProvider extends ServiceProvider
     {
         $this->publishConfig();
 
-        Route::macro('groupMenu', function (string $label) {
-            RegisterMenu::groupping($label);
-            return $this;
-        });
-
-        Route::macro('menu', function (string $label) {
+        Route::macro('menu', function (string $label, string $groupLabel) {
             /** @var \Illuminate\Routing\Route $this */
-            RegisterMenu::add($this, $label);
+            RegisterMenu::add($this, $label, $groupLabel);
             return $this;
-        });
-
-        Route::macro('group', function ($attributes, $routes) {
-            $result = \Illuminate\Support\Facades\Route::buildGroup($attributes, $routes);
-            RegisterMenu::endGroup();
-            return $result;
         });
     }
 
